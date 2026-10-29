@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { resolveIdentity } from "@/server/identity";
 
-const cfg = { ADMIN_EMAILS: ["boss@ma.example"], MANAGER_EMAILS: ["mgr@ma.example"], ALLOWED_EMAIL_DOMAINS: ["ma.example"] };
+const cfg = { ADMIN_EMAILS: ["boss@ma.example"], MANAGER_EMAILS: ["mgr@ma.example"], ALLOWED_EMAIL_DOMAINS: ["ma.example"], ALLOWED_EMAILS: [] as string[] };
 
 describe("resolveIdentity (OIDC claims → portal user)", () => {
   it("requires a verified email in an allowed domain", () => {
@@ -23,6 +23,17 @@ describe("resolveIdentity (OIDC claims → portal user)", () => {
   });
 
   it("an empty domain list allows any verified email (single-tenant IdP)", () => {
-    expect(resolveIdentity({ sub: "1", email: "x@any.example", email_verified: true }, { ...cfg, ALLOWED_EMAIL_DOMAINS: [] })).toMatchObject({ ok: true });
+    expect(resolveIdentity({ sub: "1", email: "x@any.example", email_verified: true }, { ...cfg, ALLOWED_EMAIL_DOMAINS: [], ALLOWED_EMAILS: [] })).toMatchObject({ ok: true });
+  });
+
+  it("lets individually allowed addresses in without opening their whole domain", () => {
+    const c = { ...cfg, ALLOWED_EMAILS: ["owner@gmail.example"] };
+    expect(resolveIdentity({ sub: "1", email: "Owner@Gmail.example", email_verified: true }, c)).toMatchObject({ ok: true, user: { role: "member" } });
+    expect(resolveIdentity({ sub: "2", email: "stranger@gmail.example", email_verified: true }, c)).toEqual({ ok: false, reason: "domain" });
+  });
+
+  it("with only individual addresses configured, nobody else gets in", () => {
+    const c = { ...cfg, ALLOWED_EMAIL_DOMAINS: [], ALLOWED_EMAILS: ["owner@gmail.example"] };
+    expect(resolveIdentity({ sub: "1", email: "x@ma.example", email_verified: true }, c)).toEqual({ ok: false, reason: "domain" });
   });
 });

@@ -87,4 +87,10 @@ describe("parseEnv on Netlify", () => {
   it("requires ALLOWED_EMAIL_DOMAINS for OIDC in production (Google accepts any account)", () => {
     expect(() => parseEnv({ ...oidc, NODE_ENV: "production", ALLOWED_EMAIL_DOMAINS: "" })).toThrow(/ALLOWED_EMAIL_DOMAINS/);
   });
+
+  it("accepts individual ALLOWED_EMAILS instead of a domain, lower-cased", () => {
+    const env = parseEnv({ ...oidc, NODE_ENV: "production", ALLOWED_EMAIL_DOMAINS: "", ALLOWED_EMAILS: " Owner@Gmail.com " });
+    expect(env.ALLOWED_EMAILS).toEqual(["owner@gmail.com"]);
+    expect(env.ALLOWED_EMAIL_DOMAINS).toEqual([]);
+  });
 });

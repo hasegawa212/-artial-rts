@@ -26,6 +26,7 @@ const schema = z
     ADMIN_EMAILS: list(true),
     MANAGER_EMAILS: list(true),
     ALLOWED_EMAIL_DOMAINS: list(true),
+    ALLOWED_EMAILS: list(true),
   })
   .superRefine((e, ctx) => {
     const prod = e.NODE_ENV === "production";
@@ -38,8 +39,12 @@ const schema = z
     if (prod) {
       if (!e.DATABASE_URL) ctx.addIssue({ code: "custom", message: "DATABASE_URL is required in production", path: ["DATABASE_URL"] });
       // Google などの IdP は誰のアカウントでも通すので、本番は社内ドメインの指定を必須にする
-      if (e.AUTH_MODE === "oidc" && e.ALLOWED_EMAIL_DOMAINS.length === 0)
-        ctx.addIssue({ code: "custom", message: "ALLOWED_EMAIL_DOMAINS is required in production", path: ["ALLOWED_EMAIL_DOMAINS"] });
+      if (e.AUTH_MODE === "oidc" && e.ALLOWED_EMAIL_DOMAINS.length === 0 && e.ALLOWED_EMAILS.length === 0)
+        ctx.addIssue({
+          code: "custom",
+          message: "ALLOWED_EMAIL_DOMAINS or ALLOWED_EMAILS is required in production",
+          path: ["ALLOWED_EMAIL_DOMAINS"],
+        });
       for (const k of ["APP_URL", "OIDC_ISSUER"] as const) {
         if (e[k] && !e[k]!.startsWith("https://")) ctx.addIssue({ code: "custom", message: `${k} must use https in production`, path: [k] });
       }
