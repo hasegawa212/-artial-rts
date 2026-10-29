@@ -37,6 +37,9 @@ const schema = z
     }
     if (prod) {
       if (!e.DATABASE_URL) ctx.addIssue({ code: "custom", message: "DATABASE_URL is required in production", path: ["DATABASE_URL"] });
+      // Google などの IdP は誰のアカウントでも通すので、本番は社内ドメインの指定を必須にする
+      if (e.AUTH_MODE === "oidc" && e.ALLOWED_EMAIL_DOMAINS.length === 0)
+        ctx.addIssue({ code: "custom", message: "ALLOWED_EMAIL_DOMAINS is required in production", path: ["ALLOWED_EMAIL_DOMAINS"] });
       for (const k of ["APP_URL", "OIDC_ISSUER"] as const) {
         if (e[k] && !e[k]!.startsWith("https://")) ctx.addIssue({ code: "custom", message: `${k} must use https in production`, path: [k] });
       }
@@ -46,7 +49,11 @@ const schema = z
 export type Env = z.infer<typeof schema>;
 
 export function parseEnv(source: Record<string, string | undefined>): Env {
-  const cleaned = Object.fromEntries(Object.entries(source).filter(([, v]) => v !== undefined && v.trim() !== ""));
+  const cleaned: Record<string, string | undefined> = Object.fromEntries(
+    Object.entries(source).filter(([, v]) => v !== undefined && v.trim() !== ""),
+  );
+  // Netlify Database は接続文字列を NETLIFY_DB_URL で渡す
+  cleaned.DATABASE_URL ??= cleaned.NETLIFY_DB_URL;
   const r = schema.safeParse(cleaned);
   if (!r.success) throw new Error("Invalid configuration: " + r.error.issues.map((i) => i.message).join("; "));
   return r.data;

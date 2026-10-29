@@ -10,6 +10,7 @@ const oidc = {
   OIDC_CLIENT_ID: "client",
   OIDC_CLIENT_SECRET: "secret",
   DATABASE_URL: "postgresql://u:p@localhost:5432/one",
+  ALLOWED_EMAIL_DOMAINS: "example.com",
 };
 
 describe("parseEnv (fail-closed configuration)", () => {
@@ -67,5 +68,23 @@ describe("parseEnv (fail-closed configuration)", () => {
 
   it("defaults to oidc, never dev", () => {
     expect(() => parseEnv({ NODE_ENV: "development", SESSION_SECRET: SECRET })).toThrow(/OIDC_ISSUER/);
+  });
+});
+
+describe("parseEnv on Netlify", () => {
+  const base = { ...oidc, NODE_ENV: "production", ALLOWED_EMAIL_DOMAINS: "example.com" };
+
+  it("uses NETLIFY_DB_URL when DATABASE_URL is not set", () => {
+    const { DATABASE_URL: _drop, ...rest } = base;
+    const env = parseEnv({ ...rest, NETLIFY_DB_URL: "postgresql://netlify/db" });
+    expect(env.DATABASE_URL).toBe("postgresql://netlify/db");
+  });
+
+  it("prefers an explicit DATABASE_URL", () => {
+    expect(parseEnv({ ...base, NETLIFY_DB_URL: "postgresql://netlify/db" }).DATABASE_URL).toBe(oidc.DATABASE_URL);
+  });
+
+  it("requires ALLOWED_EMAIL_DOMAINS for OIDC in production (Google accepts any account)", () => {
+    expect(() => parseEnv({ ...oidc, NODE_ENV: "production", ALLOWED_EMAIL_DOMAINS: "" })).toThrow(/ALLOWED_EMAIL_DOMAINS/);
   });
 });

@@ -16,9 +16,11 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "verify": "npm run typecheck && npm test && npm run build",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "db:migrations": "tsx prisma/write-migrations.ts"
   },
   "dependencies": {
+    "@netlify/database": "^2.0.1",
     "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.10.1",
     "class-variance-authority": "^0.7.1",

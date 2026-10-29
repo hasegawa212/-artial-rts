@@ -1,0 +1,10 @@
+# MARTIAL ARTS ONE — Netlify（Next.js ランタイムは自動検出）
+# DB は Netlify Database。netlify/database/migrations を本番公開の直前に自動適用する。
+# 秘密（SESSION_SECRET・OIDC_CLIENT_SECRET など）はここに書かず、Netlify の環境変数に置く。
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NEXT_TELEMETRY_DISABLED = "1"

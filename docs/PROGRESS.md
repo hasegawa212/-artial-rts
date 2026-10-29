@@ -11,6 +11,6 @@
 - [ ] 稼働確認済み URL が 0 件（外部に出られない環境のため）。管理者画面で確認後に更新が必要
 - [ ] 各アプリの管理者・一部の認証方式・3 リポジトリ（ma-customer-management / fp / Chat-Bridge）が未確認
 - [x] 新規独立リポジトリ `hasegawa212/martial-arts-one` として分離（既存リポジトリには何もコミットしていない）
-- [ ] 本番デプロイ（承認待ち。未実施）
+- [ ] 本番デプロイ：承認済み（2026-10-29、Google Workspace + Netlify + Netlify Database）。サイト作成・環境変数の一部まで。OAuth クライアントと社内ドメインの設定待ち
 - [ ] 管理者画面からのアプリ追加・編集（現在は URL 確認状況の変更のみ。台帳は `catalog.ts` → `npm run db:seed`）
 - [ ] 実機 Safari での確認（Playwright の Chromium エミュレーションのみ）

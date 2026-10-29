@@ -35,6 +35,13 @@ npm run build
 
 `AUTH_MODE=oidc`、`OIDC_ISSUER` / `OIDC_CLIENT_ID` / `OIDC_CLIENT_SECRET`、https の `APP_URL`、`DATABASE_URL`、`SESSION_SECRET`（32 文字以上）が必須。どれかが欠けると起動しない。IdP のリダイレクト URI は `${APP_URL}/api/auth/callback`。ロールは `ADMIN_EMAILS` / `MANAGER_EMAILS`、社外アカウントの拒否は `ALLOWED_EMAIL_DOMAINS`。
 
+## Netlify へのデプロイ
+
+- サイト `martial-arts-one`（https://martial-arts-one.netlify.app）。DB は Netlify Database（`@netlify/database` を入れておくと自動で用意される）。
+- スキーマと台帳の初期データは `netlify/database/migrations/` の SQL で、本番公開の直前に自動適用される。**適用済みのマイグレーションは書き換えない**（Netlify が拒否する）。変更は新しいマイグレーションを足す。
+- 環境変数（Netlify の画面）：`AUTH_MODE=oidc`、`APP_URL`、`OIDC_ISSUER=https://accounts.google.com`、`OIDC_CLIENT_ID`、`OIDC_CLIENT_SECRET`、`SESSION_SECRET`、`ALLOWED_EMAIL_DOMAINS`、`ADMIN_EMAILS`。`DATABASE_URL` は不要（`NETLIFY_DB_URL` を使う）。
+- Google Cloud の OAuth クライアント（ウェブアプリ）の承認済みリダイレクト URI：`https://martial-arts-one.netlify.app/api/auth/callback`。
+
 ## アプリを足す・直す
 
-`src/domain/catalog.ts` の `APPS` に追記 → `npm test`（台帳の検証テストが通ること）→ `npm run db:seed`。URL は **デプロイ設定や README に書かれたものだけ**（`urlStatus: "documented"` と出典 `urlSource`）。不明なら `url: null, urlStatus: "unknown"`。
+`src/domain/catalog.ts` の `APPS` に追記 → `npm test`（台帳の検証テストが通ること）。本番の DB には、変更分を新しいマイグレーション SQL として `netlify/database/migrations/` に足して反映する。URL は **デプロイ設定や README に書かれたものだけ**（`urlStatus: "documented"` と出典 `urlSource`）。不明なら `url: null, urlStatus: "unknown"`。
