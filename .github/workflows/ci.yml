@@ -1,0 +1,44 @@
+name: martial-arts-one
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: one
+          POSTGRES_PASSWORD: one
+          POSTGRES_DB: one_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U one -d one_test" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      DATABASE_URL: postgresql://one:one@localhost:5432/one_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci # postinstall で prisma generate
+      - run: npm run typecheck
+      - run: npm test
+      - run: npx prisma db push
+      - run: npm run test:db
+      - name: build
+        run: npm run build
+        env:
+          DATABASE_URL: ""
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e

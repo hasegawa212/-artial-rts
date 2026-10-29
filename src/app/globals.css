@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+/* LUXURY AI ENTERPRISE — ブラック × ディープネイビー × シャンパンゴールド
+   色はすべてトークン。ライト/ダークで値だけ入れ替える。 */
+:root {
+  --bg: #f6f4ef;
+  --surface: #ffffff;
+  --surface-2: #efece4;
+  --line: #e2ddd1;
+  --text: #0e1626;
+  --muted: #5d6474;
+  --gold: #8f7034; /* ライト背景で 4.5:1 以上 */
+  --gold-soft: #c9a961;
+  --gold-wash: #c9a96124;
+  --navy: #0f1f3d;
+  --danger: #a3362b;
+  --ok: #2f6b4f;
+  --ring: #8f703466;
+  --shadow: 0 1px 2px #0e16260f, 0 8px 24px -12px #0e162629;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #07080b;
+    --surface: #0d1424;
+    --surface-2: #121b30;
+    --line: #1f2a42;
+    --text: #ece8de;
+    --muted: #98a0b3;
+    --gold: #d6bb80;
+    --gold-soft: #c9a961;
+    --gold-wash: #c9a9611f;
+    --navy: #0b1a33;
+    --danger: #e0786c;
+    --ok: #6fbf96;
+    --ring: #d6bb8066;
+    --shadow: 0 1px 2px #0006, 0 12px 32px -16px #000c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #07080b;
+  --surface: #0d1424;
+  --surface-2: #121b30;
+  --line: #1f2a42;
+  --text: #ece8de;
+  --muted: #98a0b3;
+  --gold: #d6bb80;
+  --gold-soft: #c9a961;
+  --gold-wash: #c9a9611f;
+  --navy: #0b1a33;
+  --danger: #e0786c;
+  --ok: #6fbf96;
+  --ring: #d6bb8066;
+  --shadow: 0 1px 2px #0006, 0 12px 32px -16px #000c;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-gold-wash: var(--gold-wash);
+  --color-navy: var(--navy);
+  --color-danger: var(--danger);
+  --color-ok: var(--ok);
+  --font-sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+  --font-display: "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+body {
+  font-family: var(--font-sans);
+  font-feature-settings: "palt";
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: 0.01em;
+}
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.wordmark {
+  font-family: var(--font-display);
+  letter-spacing: 0.32em;
+  font-weight: 600;
+}
+.hairline {
+  background: linear-gradient(90deg, transparent, var(--gold-soft), transparent);
+  height: 1px;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lift {
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+  .lift:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--gold-soft) 55%, var(--line));
+  }
+  .fade-in {
+    animation: fade-in 0.28s ease both;
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+  }
+}

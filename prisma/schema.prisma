@@ -1,0 +1,93 @@
+// MARTIAL ARTS ONE — ポータルのデータ（アプリ台帳・利用者・お気に入り・履歴・監査ログ）。
+// 既存アプリの DB には一切接続しない。このスキーマは本ポータル専用。
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  member
+  manager
+  admin
+}
+
+enum UrlStatus {
+  verified
+  documented
+  unknown
+}
+
+model App {
+  id           String    @id
+  name         String
+  kana         String    @default("")
+  description  String
+  category     String
+  keywords     String[]
+  repo         String
+  path         String?
+  url          String?
+  urlStatus    UrlStatus @default(unknown)
+  urlSource    String?
+  auth         String
+  authNote     String    @default("")
+  owner        String    @default("未確認")
+  lifecycle    String
+  visibility   Role      @default(member)
+  confidential Boolean   @default(false)
+  icon         String    @default("app")
+  sortOrder    Int       @default(0)
+  updatedAt    DateTime  @updatedAt
+
+  favorites Favorite[]
+  uses      RecentUse[]
+}
+
+model User {
+  sub         String    @id
+  email       String    @unique
+  name        String
+  role        Role      @default(member)
+  createdAt   DateTime  @default(now())
+  lastLoginAt DateTime?
+
+  favorites Favorite[]
+  uses      RecentUse[]
+}
+
+model Favorite {
+  userSub   String
+  appId     String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userSub], references: [sub], onDelete: Cascade)
+  app       App      @relation(fields: [appId], references: [id], onDelete: Cascade)
+
+  @@id([userSub, appId])
+}
+
+model RecentUse {
+  userSub String
+  appId   String
+  usedAt  DateTime @default(now())
+  user    User     @relation(fields: [userSub], references: [sub], onDelete: Cascade)
+  app     App      @relation(fields: [appId], references: [id], onDelete: Cascade)
+
+  @@id([userSub, appId])
+  @@index([userSub, usedAt])
+}
+
+model AuditLog {
+  id     BigInt   @id @default(autoincrement())
+  at     DateTime @default(now())
+  actor  String
+  action String
+  target String?
+  detail String?
+
+  @@index([at])
+}
