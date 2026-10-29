@@ -27,7 +27,7 @@ test("メンバー：ホーム・カテゴリー・社外秘は見えない・�
 
   await page.goto("/admin");
   await expect(page).toHaveURL(/denied=1/);
-  await expect(page.getByRole("alert")).toContainText("権限がありません");
+  await expect(page.getByRole("alert").filter({ hasText: "権限がありません" })).toBeVisible();
   await expect(page.getByRole("link", { name: "管理者" })).toHaveCount(0);
 });
 
