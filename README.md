@@ -39,7 +39,7 @@ npm run build
 
 - サイト `martial-arts-one`（https://martial-arts-one.netlify.app）。DB は Netlify Database（`@netlify/database` を入れておくと自動で用意される）。
 - スキーマと台帳の初期データは `netlify/database/migrations/` の SQL で、本番公開の直前に自動適用される。**適用済みのマイグレーションは書き換えない**（Netlify が拒否する）。変更は新しいマイグレーションを足す。
-- 環境変数（Netlify の画面）：`AUTH_MODE=oidc`、`APP_URL`、`OIDC_ISSUER=https://accounts.google.com`、`OIDC_CLIENT_ID`、`OIDC_CLIENT_SECRET`、`SESSION_SECRET`、`ALLOWED_EMAIL_DOMAINS`、`ADMIN_EMAILS`。`DATABASE_URL` は不要（`NETLIFY_DB_URL` を使う）。
+- 環境変数（Netlify の画面）：`AUTH_MODE=oidc`、`APP_URL`、`OIDC_ISSUER=https://accounts.google.com`、`OIDC_CLIENT_ID`、`OIDC_CLIENT_SECRET`、`SESSION_SECRET`、`ALLOWED_EMAIL_DOMAINS`（社内ドメイン）と `ALLOWED_EMAILS`（個別に許可するアドレス。`gmail.com` はドメインごと許可しない）のどちらか以上、`ADMIN_EMAILS`。`DATABASE_URL` は不要（`NETLIFY_DB_URL` を使う）。
 - Google Cloud の OAuth クライアント（ウェブアプリ）の承認済みリダイレクト URI：`https://martial-arts-one.netlify.app/api/auth/callback`。
 
 ## アプリを足す・直す
