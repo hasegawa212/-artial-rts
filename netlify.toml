@@ -8,3 +8,9 @@
 [build.environment]
   NODE_VERSION = "22"
   NEXT_TELEMETRY_DISABLED = "1"
+
+# Next.js のサーバー機能（ページ・ログイン・DB）を Netlify Functions にする公式ランタイム。
+# Git 連携のビルドでは自動で入るが、アップロードでのビルドでは入らなかったため明示する。
+# バージョンは固定しない（Netlify がビルドごとに最新を使う）。
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
