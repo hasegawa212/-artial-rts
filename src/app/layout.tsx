@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   title: { default: "MARTIAL ARTS ONE", template: "%s | MARTIAL ARTS ONE" },
   description: "株式会社 Martial Arts の業務アプリを一つに。",
   robots: { index: false, follow: false },
+  // iPhone の「ホーム画面に追加」での名前（アイコンは app/apple-icon.png）
+  appleWebApp: { capable: true, title: "MA ONE", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {
