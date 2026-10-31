@@ -1,0 +1,30 @@
+name: netlify-deploy
+
+# Netlify サイト martial-arts-one へ手動で公開する。
+# Netlify と GitHub を直接つなぐまでのつなぎ。Claude が発行した一時的なデプロイ用 URL を入力に渡す。
+# 入力値はログに出さない（::add-mask::）。
+
+on:
+  workflow_dispatch:
+    inputs:
+      proxy_path:
+        description: Netlify の一時デプロイ用 URL（Claude が発行。数分で失効）
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: mask
+        run: echo "::add-mask::${{ inputs.proxy_path }}"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: deploy to Netlify (martial-arts-one)
+        env:
+          PROXY_PATH: ${{ inputs.proxy_path }}
+        run: npx -y @netlify/mcp@latest --site-id 59f5f503-b57b-44ca-b9af-5f434aba4d5e --proxy-path "$PROXY_PATH"
